@@ -1,0 +1,439 @@
+<!-- HTML for static distribution bundle build -->
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <title>Swagger UI</title>
+  <link rel="stylesheet" type="text/css" href="./swagger-ui.css" />
+  <link rel="icon" type="image/png" href="./favicon-32x32.png" sizes="32x32" />
+  <link rel="icon" type="image/png" href="./favicon-16x16.png" sizes="16x16" />
+  <style>
+    html {
+      box-sizing: border-box;
+      overflow: -moz-scrollbars-vertical;
+      overflow-y: scroll;
+    }
+
+    *,
+    *:before,
+    *:after {
+      box-sizing: inherit;
+    }
+
+    body {
+      margin: 0;
+      background: #fafafa;
+    }
+  </style>
+</head>
+
+<body>
+  <div id="swagger-ui"></div>
+
+  <script src="./swagger-ui-bundle.js" charset="UTF-8"> </script>
+  <script src="./swagger-ui-standalone-preset.js" charset="UTF-8"> </script>
+  <script>
+    window.onload = function () {
+      // Begin Swagger UI call region
+      const ui = SwaggerUIBundle({
+        spec: {
+          "openapi": "3.0.0",
+          "info": {
+            "description": "This is documentation of API, which acts as SMS gateway.\n\n It provides " +
+              "features such as authorization tokens for accessing API, basic statistics and of course sending SMS.",
+            "version": "v2",
+            "title": "SMS Gateway",
+            "termsOfService": "http://swagger.io/terms/",
+            "contact": {
+              "email": "apiteam@swagger.io"
+            },
+            "license": {
+              "name": "Apache 2.0",
+              "url": "http://www.apache.org/licenses/LICENSE-2.0.html"
+            }
+          },
+          "servers": [
+            {
+              "description": "Server, on which API is running",
+              "url": "https://liberec.cliquo.cz"
+            }
+          ],
+          "paths": {
+            "/smsgateway/api": {
+              "post": {
+                "tags": [
+                  "api"
+                ],
+                "description": "Attempts to send SMS and succeeds, if authorization token is valid and " +
+                  "limit of sent SMS wasn't exceeded.",
+                "summary": "send",
+                "operationId": "sendSMS",
+                "requestBody" : {
+                  "required": true,
+                  "description": "SMS placed in queue, waiting to be sent",
+                  "content": {
+                    "application/json": {
+                      "schema": {
+                        "type": "object",
+                        "properties": {
+                          "number": {
+                            "type": "string",
+                            "example": "606832987"
+                          },
+                          "text": {
+                            "type": "string",
+                            "example": "Ahoj"
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
+                "responses": {
+                  "200": {
+                    "description": "successful operation",
+                    "content": {
+                      "application/json": {
+                        "schema": {
+                          "type": "object",
+                          "properties": {
+                            "id": {
+                              "type": "integer",
+                              "format": "int32",
+                              "example": 434
+                            }
+                          }
+                        }
+                      }
+                    }
+                  },
+                  "400": {
+                    "description": "Invalid body request",
+                    "content": {
+                      "application/json": {
+                        "schema": {
+                          "type": "object",
+                          "properties": {
+                            "error": {
+                              "type": "string",
+                              "example": "Neplatný text nebo number v body requestu"
+                            }
+                          }
+                        }
+                      }
+                    }
+                  },
+                  "401": {
+                    "description": "API key is missing or invalid",
+                    "headers": {
+                      "WWW_Authenticate": {
+                        "schema": {
+                          "type": "string"
+                        },
+                        "description": "support for various authentication mechanisms"
+                      }
+                    },
+                    "content": {
+                      "application/json": {
+                        "schema": {
+                          "type": "object",
+                          "properties": {
+                            "error": {
+                              "type": "string",
+                              "example": "Neplátný nebo chybějící API key v headeru requestu."
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
+              }
+            },
+            "/smsgateway/api/{smsId}/status": {
+              "get": {
+                "tags": [
+                  "api"
+                ],
+                "description": "Finds out, based on entered id, if SMS was already sent or it waits in queue.",
+                "summary": "getStatus",
+                "operationId": "getStatusById",
+                "parameters": [
+                  {
+                    "name": "smsId",
+                    "in": "path",
+                    "description": "SMS identifier, if entered, is used to get status of message",
+                    "required": true,
+                    "schema": {
+                      "type": "integer",
+                      "minimum": 1
+                    }
+                  }
+                ],
+                "responses": {
+                  "200": {
+                    "description": "successful operation",
+                    "content": {
+                      "application/json": {
+                        "schema": {
+                          "type": "object",
+                          "properties": {
+                            "id": {
+                              "type": "integer",
+                              "format": "int32",
+                              "example": 52
+                            },
+                            "status": {
+                              "type": "string",
+                              "enum": ["SENT", "PENDING", "GAVEUP"]
+                            },
+                            "dateSent": {
+                              "type": "string",
+                              "example": "2021-06-30 18:30:20"
+                            },
+                            "dateReceived": {
+                              "type": "string",
+                              "example": "2021-06-30 17:30:10"
+                            }
+                          }
+                        }
+                      }
+                    }
+                  },
+                  "400": {
+                    "description": "Invalid Id parameter",
+                    "content": {
+                      "application/json": {
+                        "schema": {
+                          "type": "object",
+                          "properties": {
+                            "error": {
+                              "type": "string",
+                              "example": "Špatně zadaný query parametr v URL cestě."
+                            }
+                          }
+                        }
+                      }
+                    }
+                  },
+                  "404": {
+                    "description": "SMS not found",
+                    "content": {
+                      "application/json": {
+                        "schema": {
+                          "type": "object",
+                          "properties": {
+                            "error": {
+                              "type": "string",
+                              "example": "SMS nebyla nalezena."
+                            }
+                          }
+                        }
+                      }
+                    }
+                  },
+                  "401": {
+                    "description": "API key is missing or invalid",
+                    "headers": {
+                      "WWW_Authenticate": {
+                        "schema": {
+                          "type": "string"
+                        },
+                        "description": "support for various authentication mechanisms"
+                      }
+                    },
+                    "content": {
+                      "application/json": {
+                        "schema": {
+                          "type": "object",
+                          "properties": {
+                            "error": {
+                              "type": "string",
+                              "example": "Neplátný nebo chybějící API key v headeru requestu."
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "/smsgateway/api/queue": {
+              "get": {
+                "tags": [
+                  "api"
+                ],
+                "description": "Finds all SMS that were placed in queue.",
+                "summary": "getQueue",
+                "operationId": "getSMSFromQueue",
+                "responses": {
+                  "200": {
+                    "description": "successful operation",
+                    "content": {
+                      "application/json": {
+                        "schema": {
+                          "type": "array",
+                          "items": {
+                            "type": "object",
+                            "properties": {
+                              "id": {
+                                "type": "integer",
+                                "format": "int32",
+                                "example": 30
+
+                              },
+                              "text": {
+                                "type": "string",
+                                "example": "Ahoj"
+                              },
+                              "status": {
+                                "type": "string",
+                                "enum": ["SENT", "PENDING", "GAVEUP"]
+                              },
+                              "number": {
+                                "type": "string",
+                                "example": "606863753"
+                              },
+                              "dateReceived": {
+                                "type": "string",
+                                "example": "2021-06-30 18:30:02"
+                              },
+                              "dateSent": {
+                                "type": "string",
+                                "example": "2021-06-30 19:30:02"
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  },
+                  "401": {
+                    "description": "API key is missing or invalid",
+                    "headers": {
+                      "WWW_Authenticate": {
+                        "schema": {
+                          "type": "string"
+                        },
+                        "description": "support for various authentication mechanisms"
+
+                      }
+                    },
+                    "content": {
+                      "application/json": {
+                        "schema": {
+                          "type": "object",
+                          "properties": {
+                            "error": {
+                              "type": "string",
+                              "example": "Neplátný nebo chybějící API key v headeru requestu."
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "/smsgateway/api/stats": {
+              "get": {
+                "tags": [
+                  "api"
+                ],
+                "description": "Finds all days, where atleast one SMS was sent, and counts number of SMS sent per invidual days",
+                "summary": "getStats",
+                "operationId": "getDaysWhereSentSmsWere",
+                "responses": {
+                  "200": {
+                    "description": "successful operation",
+                    "content": {
+                      "application/json": {
+                        "schema": {
+                          "type": "array",
+                          "items": {
+                            "type": "object",
+                            "properties": {
+                              "date": {
+                                "type": "string",
+                                "example": "2021-06-30"
+                              },
+                              "numberOfSentSms": {
+                                "type": "integer",
+                                "format": "int32",
+                                "example": "332"
+                              },
+                            }
+                          }
+                        }
+                      }
+                    }
+                  },
+                  "401": {
+                    "description": "API key is missing or invalid",
+                    "headers": {
+                      "WWW_Authenticate": {
+                        "schema": {
+                          "type": "string"
+                        },
+                        "description": "support for various authentication mechanisms"
+                      }
+                    },
+                    "content": {
+                      "application/json": {
+                        "schema": {
+                          "type": "object",
+                          "properties": {
+                            "error": {
+                              "type": "string",
+                              "example": "Neplátný nebo chybějící API key v headeru requestu."
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "components": {
+            "securitySchemes": {
+              "ApiKeyAuth": {
+                "type": "apiKey",
+                "name": "X-API-Key",
+                "in": "header"
+              }
+            }
+          },
+          "externalDocs": {
+            "description": "Find out more about Swagger",
+            "url": "http://swagger.io"
+          },
+          "security": [
+            { 
+              "ApiKeyAuth": [] 
+            }
+          ]
+        },
+        dom_id: '#swagger-ui',
+        deepLinking: true,
+        presets: [
+          SwaggerUIBundle.presets.apis,
+          SwaggerUIStandalonePreset
+        ],
+        plugins: [
+          SwaggerUIBundle.plugins.DownloadUrl
+        ],
+        layout: "StandaloneLayout"
+      });
+      // End Swagger UI call region
+
+      window.ui = ui;
+    };
+  </script>
+</body>
+
+</html>
