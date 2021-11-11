@@ -2,3 +2,4 @@
 
 ## References:
 * [Swagger API Documentation and Tester](https://liberec.cliquo.cz/php/smsgateway/swagger/)
+* [API Location](https://liberec.cliquo.cz/smsgateway/api)
