@@ -9,3 +9,4 @@
 * [OpenAPI Standard Documentation](https://swagger.io/docs/specification/about/)
 * [Swagger documentation](https://docs.gammu.org/gammu/index.html#gammu)
 * [PHP documentation](https://www.php.net/manual/en/index.php)
+* [Inspirace k tvorbě API v rámci PHP](https://github.com/pslib-cz/2020p3web-own-rest-api-JanDostal)
