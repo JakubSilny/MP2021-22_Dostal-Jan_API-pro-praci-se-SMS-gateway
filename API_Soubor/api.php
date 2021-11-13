@@ -2,11 +2,9 @@
 
 header('Content-type: application/json');
 header("Access-Control-Allow-Origin: *");
-header('Access-Control-Allow-Headers: X-API-Key, Origin, X-Requested-With, Content-Type, Accept, Access-Control-Request-Method, Access-Control-Allow-Origin');
 header("Allow: GET, POST");
 header("Access-Control-Max-Age: 3600");
 header('Access-Control-Allow-Methods: GET, POST');
-
 
 try {
 
@@ -28,8 +26,9 @@ try {
         header('WWW-Authenticate: Bearer');
         throw new Exception("Neplátný nebo chybějící API key v headeru requestu.", 401);
     }
-   
 
+    header('Access-Control-Allow-Headers: X-API-Key, Origin, X-Requested-With, Content-Type, Accept, Access-Control-Request-Method, Access-Control-Allow-Origin');
+   
 	$result = array();
 
 	$uri = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
@@ -37,9 +36,6 @@ try {
 
 
 	if($uri[2] == "api" && $_SERVER['REQUEST_METHOD']=="POST") {
-		//
-		//	prvni case
-		//
 
         if($_SERVER['CONTENT_TYPE'] != "application/json") {
             throw new Exception("Neplatný typ obsahu payloadu", 400);
@@ -50,8 +46,25 @@ try {
         $object = json_decode($body, true);
  
         if (!is_array($object)) {
-            throw new Exception('Špatná struktura payloadu');
+            throw new Exception('Špatná struktura payloadu', 400);
         }
+
+        if (!array_key_exists("number", $object) || !is_string($object["text"]) || strlen($object["text"]) > 160 || !array_key_exists("text", $object) || !preg_match('/^(\+420|00420)[1-9][0-9]{2}[0-9]{3}[0-9]{3}$/', $object["number"])) {
+
+            throw new Exception("Neplatný text nebo number v body requestu", 400);
+        }
+
+        $core->sql->query("
+        INSERT INTO sms_queue SET
+            account = '{$value}',
+            `created` = NOW(),
+            `to` = '{$core->sql->escape($object["number"])}',
+            `body` = '{$core->sql->escape($object["text"])}'
+    ");
+
+        $lastAutoIncrement = $core->sql->insert_id();
+
+        $result = array("id" => $lastAutoIncrement);
 
 	} else if($uri[2] == "api" && isset($uri[3]) && $uri[4] == "status" && $uri[3] != "" && count($uri) == 5 && $_SERVER['REQUEST_METHOD']=="GET") {
 
@@ -62,7 +75,8 @@ try {
         $result = $core->sql->fetchArray("
             SELECT id, status, sent, created
             FROM sms_queue 
-            WHERE id = ".(int) $uri[3]."
+            WHERE account = '{$value}'
+            AND id = ".(int) $uri[3]."
             ");
 
         if ($result == null) {
@@ -74,6 +88,7 @@ try {
         $result = $core->sql->toArray("
             SELECT id, body, status, `to` AS `num`, created, sent
             FROM sms_queue
+            WHERE account = '{$value}'
             ORDER BY created DESC 
             ");
 
