@@ -27,6 +27,7 @@ try {
         throw new Exception("Neplátný nebo chybějící API key v headeru requestu.", 401);
     }
 
+    
     header('Access-Control-Allow-Headers: X-API-Key, Origin, X-Requested-With, Content-Type, Accept, Access-Control-Request-Method, Access-Control-Allow-Origin');
    
 	$result = array();
@@ -35,7 +36,7 @@ try {
     $uri = explode( '/', $uri );
 
 
-	if($uri[2] == "api" && $_SERVER['REQUEST_METHOD']=="POST") {
+	if($uri[2] == "api" && count($uri) == 3 && $_SERVER['REQUEST_METHOD']=="POST") {
 
         if($_SERVER['CONTENT_TYPE'] != "application/json") {
             throw new Exception("Neplatný typ obsahu payloadu", 400);
@@ -83,7 +84,7 @@ try {
             throw new Exception("SMS nebyla nalezena.", 404);
         }
 	}
-      else if($uri[2] == "api" && $uri[3] == "queue" && $_SERVER['REQUEST_METHOD']=="GET") {
+      else if($uri[2] == "api" && $uri[3] == "queue" && count($uri) == 4 && $_SERVER['REQUEST_METHOD']=="GET") {
 
         $result = $core->sql->toArray("
             SELECT id, body, status, `to` AS `num`, created, sent
@@ -93,7 +94,7 @@ try {
             ");
 
     }
-     else if ($uri[2] == "api" && $uri[3] == "stats" && $_SERVER['REQUEST_METHOD']=="GET") {
+     else if ($uri[2] == "api" && $uri[3] == "stats" && count($uri) == 4 && $_SERVER['REQUEST_METHOD']=="GET") {
 
         $result = $core->sql->toArray("
             SELECT DATE(sent) AS dateOfSending,
