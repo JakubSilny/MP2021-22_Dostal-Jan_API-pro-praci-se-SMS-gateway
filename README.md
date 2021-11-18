@@ -10,3 +10,4 @@
 * [Swagger documentation](https://docs.gammu.org/gammu/index.html#gammu)
 * [PHP documentation](https://www.php.net/manual/en/index.php)
 * [Inspirace k tvorbě API v rámci PHP](https://github.com/pslib-cz/2020p3web-own-rest-api-JanDostal)
+* [LTE modem se SIM kartou](https://eu.dlink.com/cz/cs/products/dwm-222-4g-lte-usb-adapter)
