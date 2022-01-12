@@ -7,7 +7,7 @@
 * [Obchod s Raspberry PI deskou na architektuře ARM](https://botland.cz/moduly-a-sady-raspberry-pi-4b/14646-raspberry-pi-4-model-b-wifi-dualband-bluetooth-2-gb-ram-15-ghz-765756931175.html)
 * [Gammu utilita](https://docs.gammu.org/gammu/index.html#gammu)
 * [OpenAPI Standard Documentation](https://swagger.io/docs/specification/about/)
-* [Swagger documentation](https://docs.gammu.org/gammu/index.html#gammu)
+* [Swagger documentation](https://swagger.io/specification/)
 * [PHP documentation](https://www.php.net/manual/en/index.php)
 * [Inspirace k tvorbě API v rámci PHP](https://github.com/pslib-cz/2020p3web-own-rest-api-JanDostal)
 * [LTE modem se SIM kartou](https://eu.dlink.com/cz/cs/products/dwm-222-4g-lte-usb-adapter)
