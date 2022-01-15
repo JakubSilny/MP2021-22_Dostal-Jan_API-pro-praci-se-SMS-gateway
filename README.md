@@ -9,7 +9,7 @@
 * [OpenAPI Standard Documentation](https://swagger.io/docs/specification/about/)
 * [Swagger documentation](https://swagger.io/specification/)
 * [PHP documentation](https://www.php.net/manual/en/index.php)
-* [Inspirace k tvorbě API v rámci PHP](https://github.com/pslib-cz/2020p3web-own-rest-api-JanDostal)
+* [Inspirace k tvorbě API obecně](https://github.com/pslib-cz/2020p3web-own-rest-api-JanDostal)
 * [LTE modem se SIM kartou](https://eu.dlink.com/cz/cs/products/dwm-222-4g-lte-usb-adapter)
 * [Program pro vzdálené připojení do souborového systému Raspberry PI desky kvůli přístupu k PHP souborům](https://filezilla-project.org/)
 * [Informace o CORS pro implementaci do API](https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS)
@@ -23,4 +23,5 @@
 * [Důvod hlídání limitu počtu znaků ve těle zprávy](https://en.wikipedia.org/wiki/Concatenated_SMS)
 * [Pomocník při vytváření validace těla sms zpráv](https://www.textmagic.com/free-tools/sms-length-calculator)
 * [Sekundární systém pro odesílání sms](https://smsmanager.cz/api/)
-
+* [Informace o implementaci autentizace do API pomocí API klíče a dalších zabezpečení](https://www.loginradius.com/blog/async/everything-you-want-to-know-about-authorization-headers/)
+* [Návod na získání dat z payloadu (těla) POST requestu u API v rámci PHP](https://www.stevenrombauts.be/2018/06/read-json-request-data-with-php/)
