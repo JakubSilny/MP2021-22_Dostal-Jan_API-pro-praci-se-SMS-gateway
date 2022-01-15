@@ -1,4 +1,4 @@
-{* // jiz existoval pred revizi, pouze revizovan a trochu vylepsen*}
+{* jiz existoval pred revizi, pouze revizovan a trochu vylepsen *}
 
 <div class="toolbar">
 	<button type="button" href="/smsgateway/cron" onclick="$.colorbox({ innerWidth:600, innerHeight:500, href:$(this).attr('href') });"><i class="fas fa-play"></i> CRON</button>

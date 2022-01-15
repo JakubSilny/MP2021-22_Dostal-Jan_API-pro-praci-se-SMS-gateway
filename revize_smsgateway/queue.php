@@ -1,5 +1,7 @@
 <?php
-{* // jiz existoval pred revizi, pouze revizovan a trochu vylepsen*}
+
+// jiz existoval pred revizi, pouze revizovan a trochu vylepsen
+
 
 $paginate = 30;
 $limit = $paginate;
@@ -24,7 +26,7 @@ if($_GET["case"] == "sendtest") {
 
 		$core->sql->query("
 			INSERT INTO sms_queue SET
-				account = '7463a474-382b-11eb-a25c-dca632dccec4',
+				account = '".$core->sql->escape($core->conf["testAccountToken"])."',
 				`created` = NOW(),
 				`to` = '00420721125332',
 				`body` = 'Test sms! ".time()."'

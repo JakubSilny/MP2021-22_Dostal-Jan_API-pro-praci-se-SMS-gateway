@@ -1,4 +1,4 @@
-{* // jiz existoval pred revizi, pouze revizovan a trochu vylepsen*}
+{* jiz existoval pred revizi, pouze revizovan a trochu vylepsen *}
 
 <div class="msgInfo">
 	Množství vzdaných zpráv je {$sizeOfGaveUp}

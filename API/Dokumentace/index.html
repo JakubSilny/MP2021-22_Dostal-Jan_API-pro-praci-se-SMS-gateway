@@ -67,7 +67,7 @@
                   "api"
                 ],
                 "description": "Attempts to send SMS with sender determined from API key.",
-                "summary": "send",
+                "summary": "Send SMS to one recipient",
                 "operationId": "sendSMS",
                 "requestBody" : {
                   "required": true,
@@ -203,7 +203,7 @@
                   "api"
                 ],
                 "description": "Finds out, based on entered smsId and API key, if SMS was already sent, is waiting in queue or something went wrong.",
-                "summary": "getStatus",
+                "summary": "Get status of my chosen sms",
                 "operationId": "getStatusById",
                 "parameters": [
                   {
@@ -323,7 +323,7 @@
                   "api"
                 ],
                 "description": "Finds all SMS, that are currently in queue, based on entered API key",
-                "summary": "getQueue",
+                "summary": "Get all my sms waiting in queue",
                 "operationId": "getSMSFromQueue",
                 "responses": {
                   "200": {
@@ -411,7 +411,7 @@
                   "api"
                 ],
                 "description": "Finds all days from now to prior one year, where atleast one SMS was sent, and counts number of SMS sent per invidual days based on entered API key",
-                "summary": "getStats",
+                "summary": "Get number of my sent sms per individual days",
                 "operationId": "getDaysWhereSentSmsWere",
                 "responses": {
                   "200": {

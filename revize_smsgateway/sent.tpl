@@ -1,4 +1,4 @@
-{* // jiz existoval pred revizi, pouze revizovan a trochu vylepsen*}
+{* jiz existoval pred revizi, pouze revizovan a trochu vylepsen *}
 
 
 <form action="" method="get" style="padding: 20px; margin-bottom: 10px; background: #eee; text-align: center;">

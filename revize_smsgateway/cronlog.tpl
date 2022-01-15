@@ -1,4 +1,4 @@
-{* // jiz existoval pred revizi, pouze revizovan a trochu vylepsen*}
+{* jiz existoval pred revizi, pouze revizovan a trochu vylepsen *}
 
 {if time()-strtotime($lastCronDate) > 600}
 <div class="msgError">
