@@ -23,7 +23,5 @@
 * [Důvod hlídání limitu počtu znaků ve těle zprávy](https://en.wikipedia.org/wiki/Concatenated_SMS)
 * [Pomocník při vytváření validace těla sms zpráv](https://www.textmagic.com/free-tools/sms-length-calculator)
 * [Sekundární systém pro odesílání sms](https://smsmanager.cz/api/)
-* [Sekundární systém pro odesílání sms](https://smsmanager.cz/api/)
-* [Sekundární systém pro odesílání sms](https://smsmanager.cz/api/)
 * [Informace o implementaci autentizace do API pomocí API klíče a dalších zabezpečení](https://www.loginradius.com/blog/async/everything-you-want-to-know-about-authorization-headers/)
 * [Návod na získání dat z payloadu (těla) POST requestu u API v rámci PHP](https://www.stevenrombauts.be/2018/06/read-json-request-data-with-php/)
