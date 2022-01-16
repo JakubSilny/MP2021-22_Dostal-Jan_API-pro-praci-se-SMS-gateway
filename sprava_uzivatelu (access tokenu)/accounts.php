@@ -79,6 +79,11 @@ if($_GET["case"]=="getPage") {
 }
 else {
 
+	$out->assign("countOfUsers", $core->sql->fetchValue("
+		SELECT COUNT(*)
+		FROM sms_account
+	"));
+
 	$out->assign("accounts", $accounts);
 	$out->display("accounts.tpl");
 }
