@@ -2,9 +2,6 @@
 
 // jiz existoval pred revizi, pouze revizovan a trochu vylepsen
 
-
-<?php
-
 $paginate = 30;
 $limit = $paginate;
 
