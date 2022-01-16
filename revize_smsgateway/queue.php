@@ -3,6 +3,8 @@
 // jiz existoval pred revizi, pouze revizovan a trochu vylepsen
 
 
+<?php
+
 $paginate = 30;
 $limit = $paginate;
 
@@ -49,6 +51,21 @@ if($_GET["case"] == "sendtest") {
 	}
 
 	$core->quit();
+
+} else if ($_GET["case"] == "cron") {
+
+	echo '
+	<form>
+		<div class="buttons">
+			<button type="button" onclick="window.location.reload();">Obnovit stránku</button>
+		</div>
+	</form>
+	<hr />';
+
+	include_once 'cron.php';
+
+	$core->quit();
+
 } elseif($_GET["case"] == "cancel") {
 	try {
 
