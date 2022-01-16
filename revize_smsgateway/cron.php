@@ -1,7 +1,7 @@
 <?php
 
 // cron už předtím existoval, jen se upravil a modifikoval z me strany
-
+		
 $err = array();
 $sent = array();
 $queue = $core->sql->toArray("
@@ -37,10 +37,13 @@ foreach((array)$queue as $k=>$v) {
 
 		if ($gateway == "BACKUP") {
 
-			$url = "https://http-api.smsmanager.cz/Send?apikey=".$core->conf["smsManagerToken"]."&number=".urlencode($queue[$k]["to"])."&message=".urlencode($queue[$k]["body"])."&gateway=high&sender=info-sms";
+			$url = "https://http-api.smsmanager.cz/Send";
 			$ch = curl_init();
 			curl_setopt($ch, CURLOPT_USERAGENT, "myAgent");
 			curl_setopt($ch, CURLOPT_URL, $url);
+			curl_setopt($ch, CURLOPT_POST, 1);
+			curl_setopt($ch, CURLOPT_POSTFIELDS,
+			"apikey=".$core->conf["smsManagerToken"]."&number=".urlencode($queue[$k]["to"])."&message=".urlencode($queue[$k]["body"])."&gateway=high&sender=info-sms");
 			curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
 			curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);
 			curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
@@ -128,4 +131,5 @@ echo json_encode($ret, JSON_PRETTY_PRINT);
 $core->quit();
 
 ?>
+
 
