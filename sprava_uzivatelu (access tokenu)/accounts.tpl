@@ -4,6 +4,9 @@
 		<i class="fas fa-plus"></i> Přidat
 	</button>
 </div>
+<div class="msgInfo">
+	Počet uživatelů je {$countOfUsers}
+</div>
 
 <table class="adminTable">
 	<thead>
