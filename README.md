@@ -25,3 +25,8 @@
 * [Sekundární systém pro odesílání sms](https://smsmanager.cz/api/)
 * [Informace o implementaci autentizace do API pomocí API klíče a dalších zabezpečení](https://www.loginradius.com/blog/async/everything-you-want-to-know-about-authorization-headers/)
 * [Návod na získání dat z payloadu (těla) POST requestu u API v rámci PHP](https://www.stevenrombauts.be/2018/06/read-json-request-data-with-php/)
+* [Swagger implementace 1](https://swagger.io/tools/swagger-ui/)
+* [Swagger implementace 2](https://github.com/swagger-api/swagger-ui/tree/212396f24d0d0f072d06c6af71087d6fddef9134)
+* [Swagger implementace 3](https://swagger.io/docs/open-source-tools/swagger-ui/usage/installation/)
+
+
