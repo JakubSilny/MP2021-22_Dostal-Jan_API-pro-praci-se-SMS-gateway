@@ -1,5 +1,11 @@
 # MP2021-22_Dostal-Jan_API-pro-praci-se-SMS-gateway
 
+## Konceptuální model:
+![Konceptuální model](/databaze_schema/konceptualni_model.jpg)
+
+## Logický model:
+![Logický model](/databaze_schema/logicky_model.jpg)
+
 ## References:
 * [Swagger API Documentation and Tester](https://liberec.cliquo.cz/php/smsgateway/swagger/)
 * [API Location](https://liberec.cliquo.cz/smsgateway/api)
