@@ -1,7 +1,5 @@
-{* jiz existoval pred revizi, pouze revizovan a trochu vylepsen *}
-
 <div class="msgInfo">
-	Množství vzdaných zpráv je {$sizeOfGaveUp}
+	Množství vzdaných zpráv je {$pocetVzdanychZprav}
 </div>
 <form action="" method="get" style="padding: 20px; margin-bottom: 10px; background: #eee; text-align: center;">
 	<input type="text" name="q" value="{$_GET.q|htmlspecialchars}" placeholder="Vyhledat..." style="height: 30px; vertical-align: middle; padding: 0 8px; border: 1px solid #ccc; background: #fff;">
@@ -13,40 +11,40 @@
 	<thead>
 		{include file="list_head.tpl"}
 	</thead>
-	<tbody id="loadMore_target">
-		{foreach $list as $item}
+	<tbody id="nacistDalsi_cil">
+		{foreach $vzdaneZpravy as $polozka}
 			{include file="list_item.tpl" type='gaveup'}
 		{/foreach}
 	</tbody>
 </table>
-<button type="button" id="loadMore_btn" onclick="loadMore();">Načíst další</button>
+<button type="button" id="nacistDalsi_tlacitko" onclick="nacistDalsi();">Načíst další</button>
 
 <script type="text/javascript">
-	var loadMore_p = 1;
-	var loadMore_pending = false;
-	function loadMore(){
-		if(loadMore_pending) {
+	var nacistDalsi_p = 1;
+	var nacistDalsi_cekajici = false;
+	function nacistDalsi() {
+		if(nacistDalsi_cekajici) {
 			return;
 		}
 
-		loadMore_pending = true;
-		$("#loadMore_btn").append('<i class="fas fa-spinner fa-spin"></i>');
+		nacistDalsi_cekajici = true;
+		$("#nacistDalsi_tlacitko").append('<i class="fas fa-spinner fa-spin"></i>');
 		$.ajax({
 			url: window.location.href,
 			type: "get",
 			data: {
 				case: "getPage",
-				p: loadMore_p
+				p: nacistDalsi_p
 			},
 			success: function(ret) {
 				if($(ret).find("td").length == 0) {
-					$("#loadMore_btn").remove();
+					$("#nacistDalsi_tlacitko").remove();
 					return;
 				}
-				$("#loadMore_target").append(ret);
-				loadMore_pending = false;
-				$("#loadMore_btn i").remove();
-				loadMore_p++;
+				$("#nacistDalsi_cil").append(ret);
+				nacistDalsi_cekajici = false;
+				$("#nacistDalsi_tlacitko i").remove();
+				nacistDalsi_p++;
 
 				$(window).scroll();
 			}
@@ -54,12 +52,13 @@
 	}
 
 	$(window).scroll(function(){
-		if($("#loadMore_btn").length==0) {
+		if($("#nacistDalsi_tlacitko").length==0) {
 			return;
 		}
-		if($(window).scrollTop()+$(window).height() > $("#loadMore_btn").offset().top) {
-			$("#loadMore_btn").click();
+		if($(window).scrollTop()+$(window).height() > $("#nacistDalsi_tlacitko").offset().top) {
+			$("#nacistDalsi_tlacitko").click();
 		}
 	});
+
 	$(window).scroll();
 </script>

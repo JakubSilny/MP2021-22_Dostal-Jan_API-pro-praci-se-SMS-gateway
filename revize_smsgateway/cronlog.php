@@ -1,48 +1,48 @@
 <?php
-// jiz existoval pred revizi, pouze revizovan a trochu vylepsen
-$paginate = 30;
-$limit = $paginate;
+
+$startovniSqlOffset = 30;
+$sqlLimit = (int) $startovniSqlOffset;
 
 if(!empty($_GET["p"])) {
-	$limit .=" OFFSET ".($paginate * (int) $_GET["p"]);
+	$sqlLimit .=" OFFSET ".((int) $startovniSqlOffset * (int) $_GET["p"]);
 }
 
-$listLog = $core->sql->toArray("
+$cronLog = $core->sql->toArray("
 	SELECT *
 	FROM sms_cron_log
 	ORDER BY `date` DESC
-	LIMIT ".$limit."
+	LIMIT ".$sqlLimit."
 ");
 
-foreach((array)$listLog as $k=>$v) {
-	$listLog[$k]["log"] = unserialize(base64_decode($listLog[$k]["log"]));
+foreach((array)$cronLog as $k=>$v) {
+	$cronLog[$k]["log"] = unserialize(base64_decode($cronLog[$k]["log"]));
 }
 
-$out = new smartyWrapper($core);
-$out->setTemplateDir(__DIR__);
+$vystup = new smartyWrapper($core);
+$vystup->setTemplateDir(__DIR__);
 
 if($_GET["case"]=="getPage") {
 
-	$out->display("listLog_head.tpl");
+	$vystup->display("listLog_head.tpl");
 
-	foreach($listLog as $item) {
-		$out->assign("item", $item);
-		$out->display("listLog_item.tpl");
+	foreach($cronLog as $polozka) {
+		$vystup->assign("polozka", $polozka);
+		$vystup->display("listLog_item.tpl");
 	}
 
 	$core->quit();
 }
 else {
 
-	$out->assign("lastCronDate", $core->sql->fetchValue("
+	$vystup->assign("posledniSpusteniCronu", $core->sql->fetchValue("
 		SELECT `date`
 		FROM sms_cron_log
 		ORDER BY `date` DESC
 		LIMIT 1
 	"));
 
-	$out->assign("listLog", $listLog);
-	$out->display("cronlog.tpl");
+	$vystup->assign("cronLog", $cronLog);
+	$vystup->display("cronlog.tpl");
 }
 
 ?>

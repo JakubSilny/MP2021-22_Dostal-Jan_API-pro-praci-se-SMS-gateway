@@ -2,25 +2,23 @@
 
 try {
 
-	
 	if(!empty($_GET["uuid"])) {
-		// konkretni klient
 
-		$client = $core->sql->fetchArray("
+		$uzivatel = $core->sql->fetchArray("
 			SELECT *
 			FROM `sms_account` a
 			WHERE a.`uuid` = '".$core->sql->escape($_GET["uuid"])."'
 		");
-		if(empty($client)) {
+
+		if(empty($uzivatel)) {
 			throw new Exception("Nenalezeno");
 		}
 
-		$core->page["label"] .= " pro ".$client["label"];
+		$core->page["label"] .= " pro ".$uzivatel["label"];
 		
 	} else {
-		// seznam klientu
 
-		$sentSmsPerAccounts = $core->sql->toArray("
+		$odeslaneSmsDleUzivatelu = $core->sql->toArray("
 			SELECT 
 				a.`uuid` AS uuid,
 				a.`label` AS label,
@@ -28,46 +26,44 @@ try {
 			FROM `sms_account` a
 				LEFT JOIN `sms_queue` q ON (a.`uuid` = q.`account` AND q.`status` = 'SENT')
 			GROUP BY a.`uuid`
-			ORDER BY a.`label` ASC 
-			LIMIT 100
+			ORDER BY a.`label` ASC
 		");
 	}
 
 
-	$sentSmsPerDays = $core->sql->toArray("
+	$odeslaneSmsDleDnu = $core->sql->toArray("
 		SELECT
 			DATE(`sent`) AS dateOfSending,
 			COUNT(`id`) as numberOfSentSms
 		FROM `sms_queue`
 		WHERE `status` = 'SENT'
 			AND DATE(`sent`) >= DATE_SUB(CURDATE(), INTERVAL 1 YEAR)
-			".(!empty($client) ? "AND account = '".$client["uuid"]."'" : "")."
+			".(!empty($uzivatel) ? "AND account = '".$core->sql->escape($uzivatel["uuid"])."'" : "")."
 		GROUP BY DATE(`sent`)
-		LIMIT 100
 	", "first");
 
-	$t = strtotime("-1 year");
-	while($t<=time()) {
-		$d = date("Y-m-d", $t);
-		if(!isset($sentSmsPerDays[$d])) {
-			$sentSmsPerDays[$d] = array(
-				"dateOfSending" => $d,
+	$casPredJednymRokem = strtotime("-1 year");
+	while($casPredJednymRokem <= time()) {
+		$datum = date("Y-m-d", $casPredJednymRokem);
+		if(!isset($odeslaneSmsDleDnu[$datum])) {
+			$odeslaneSmsDleDnu[$datum] = array(
+				"dateOfSending" => $datum,
 				"numberOfSentSms" => 0
 			);
 		}
-		$t = strtotime("+1 day", $t);
+		$casPredJednymRokem = strtotime("+1 day", $casPredJednymRokem);
 	}
 
-	krsort($sentSmsPerDays);
+	krsort($odeslaneSmsDleDnu);
 
-	$out = new smartyWrapper($core);
-	$out->setTemplateDir(__DIR__);
+	$vystup = new smartyWrapper($core);
+	$vystup->setTemplateDir(__DIR__);
 
-	$out->assign("sentSmsPerAccounts", $sentSmsPerAccounts);
-	$out->assign("sentSmsPerDays", $sentSmsPerDays);
-	$out->assign("client", $client);
+	$vystup->assign("odeslaneSmsDleUzivatelu", $odeslaneSmsDleUzivatelu);
+	$vystup->assign("odeslaneSmsDleDnu", $odeslaneSmsDleDnu);
+	$vystup->assign("uzivatel", $uzivatel);
 
-	$out->display("stats.tpl");
+	$vystup->display("stats.tpl");
 
 
 } catch(Exception $e) {

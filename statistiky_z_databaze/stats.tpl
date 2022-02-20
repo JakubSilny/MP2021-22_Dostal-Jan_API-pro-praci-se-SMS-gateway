@@ -1,9 +1,9 @@
-{if !empty($client)}
-	<p>Klient: {$client.label}</p>
+{if !empty($uzivatel)}
+	<p>Klient: {$uzivatel.label}</p>
 	<button onclick="location.href='/smsgateway/stats'" type="button">Zpět</button>
 {/if}
 
-{if !empty($sentSmsPerAccounts)}
+{if !empty($odeslaneSmsDleUzivatelu)}
 	<h2>Uživatelé</h2>
 	<table class="adminTable" style="width: auto;">
 		<thead>
@@ -13,10 +13,10 @@
 			</tr>
 		</thead>
 		<tbody>
-			{foreach $sentSmsPerAccounts as $item}
+			{foreach $odeslaneSmsDleUzivatelu as $polozka}
 				<tr>
-					<td><a href="?uuid={$item.uuid}">{$item.label}</a></td>
-					<td class="num">{$item.numberOfSentSms}</td>
+					<td><a href="?uuid={$polozka.uuid}">{$polozka.label}</a></td>
+					<td class="num">{$polozka.numberOfSentSms}</td>
 				</tr>
 			{/foreach}
 		</tbody>
@@ -33,10 +33,10 @@
 		</tr>
 	</thead>
 	<tbody>
-		{foreach $sentSmsPerDays as $item}
+		{foreach $odeslaneSmsDleDnu as $polozka}
 			<tr>
-				<td class="center">{$item.dateOfSending}</td>
-				<td class="num">{$item.numberOfSentSms}</td>
+				<td class="center">{$polozka.dateOfSending}</td>
+				<td class="num">{$polozka.numberOfSentSms}</td>
 			</tr>
 		{/foreach}
 	</tbody>

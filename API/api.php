@@ -1,216 +1,215 @@
 <?php
 
-header_remove("Set-Cookie");
-header("Access-Control-Allow-Origin: *");
+$statusKod = 0;
 
 try {
 
-    $headers = apache_request_headers();
-    $uri = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
-    $uri = explode('/', $uri);
+	header_remove("Set-Cookie");
+	header("Access-Control-Allow-Origin: *");
 
-    if ($_SERVER['REQUEST_METHOD'] == "OPTIONS" && isset($headers["Origin"]) && isset($headers["Access-Control-Request-Method"])) {
+	$hlavicky = apache_request_headers();
+	$url = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
+	$url = explode('/', $url);
 
-        if ($uri[2] == "api" && count($uri) == 3) {
-            header("Access-Control-Max-Age: 86400");
-            header('Access-Control-Allow-Methods: POST');
-            header('Access-Control-Allow-Headers: *');
-            http_response_code(204);
-        }
-        else if ($uri[2] == "api" && isset($uri[3]) && $uri[4] == "status" && $uri[3] != "" && count($uri) == 5) {
-            header("Access-Control-Max-Age: 86400");
-            header('Access-Control-Allow-Methods: GET');
-            header('Access-Control-Allow-Headers: *');
-            http_response_code(204);
+	if ($_SERVER['REQUEST_METHOD'] == "OPTIONS" && isset($hlavicky["Origin"]) && isset($hlavicky["Access-Control-Request-Method"])) {
 
-        }
-        else if ($uri[2] == "api" && $uri[3] == "queue" && count($uri) == 4) {
-            header("Access-Control-Max-Age: 86400");
-            header('Access-Control-Allow-Methods: GET');
-            header('Access-Control-Allow-Headers: *');
-            http_response_code(204);
+		if ($url[2] == "api" && count($url) == 3) {
+			header("Access-Control-Max-Age: 86400");
+			header('Access-Control-Allow-Methods: POST');
+			header('Access-Control-Allow-Headers: *');
+		}
+		else if ($url[2] == "api" && isset($url[3]) && $url[4] == "status" && $url[3] != "" && count($url) == 5) {
+			header("Access-Control-Max-Age: 86400");
+			header('Access-Control-Allow-Methods: GET');
+			header('Access-Control-Allow-Headers: *');
 
-        }
-        else if ($uri[2] == "api" && $uri[3] == "stats" && count($uri) == 4) {
-            header("Access-Control-Max-Age: 86400");
-            header('Access-Control-Allow-Methods: GET');
-            header('Access-Control-Allow-Headers: *');
-            http_response_code(204);
-        }
-        else {
+		}
+		else if ($url[2] == "api" && $url[3] == "queue" && count($url) == 4) {
+			header("Access-Control-Max-Age: 86400");
+			header('Access-Control-Allow-Methods: GET');
+			header('Access-Control-Allow-Headers: *');
 
-            http_response_code(204);
-        }
-    }
-    else {
+		}
+		else if ($url[2] == "api" && $url[3] == "stats" && count($url) == 4) {
+			header("Access-Control-Max-Age: 86400");
+			header('Access-Control-Allow-Methods: GET');
+			header('Access-Control-Allow-Headers: *');
+		}
 
-        header('Content-type: application/json');
+		http_response_code(204);
 
-        $key = $headers["XXXX"];
+	}
+	else {
 
-        if (empty($key)) {
-            header('WWW-Authenticate: Bearer');
+		header('Content-type: application/json');
 
-            throw new Exception("Unauthorized", 401);
-        }
+		$autentizacniKlic = $hlavicky["XXXX"];
 
-        $value = $core->sql->fetchValue("
-            SELECT `uuid`
-            FROM `sms_account`
-            WHERE `uuid` = '".$core->sql->escape($key)."'
-                AND active = 'Y'
-        ");
+		if (empty($autentizacniKlic)) {
+			header('WWW-Authenticate: Bearer');
 
-        if(empty($value)) {
+			throw new Exception("Unauthorized", 401);
+		}
 
-            header('WWW-Authenticate: apiKey');
-            throw new Exception("Invalid API key in request header", 401);
-        }
+		$identifikatorUzivatele = $core->sql->fetchValue("
+			SELECT `uuid`
+			FROM `sms_account`
+			WHERE `uuid` = '".$core->sql->escape($autentizacniKlic)."'
+				AND active = 'Y'
+		");
 
-        $result = array();
-        $code = 0;
+		if(empty($identifikatorUzivatele)) {
 
-        if($uri[2] == "api" && count($uri) == 3 && $_SERVER['REQUEST_METHOD'] == "POST") {
+			header('WWW-Authenticate: apiKey');
+			throw new Exception("Invalid API key in request header", 401);
+		}
 
-            if($_SERVER['CONTENT_TYPE'] != "application/json") {
+		$odpoved = array();
 
-                throw new Exception("Invalid request payload content type", 400);
-            }
+		if($url[2] == "api" && count($url) == 3 && $_SERVER['REQUEST_METHOD'] == "POST") {
 
-            $body = file_get_contents("php://input");
+			if($_SERVER['CONTENT_TYPE'] != "application/json") {
 
-            $object = json_decode($body, true);
+				throw new Exception("Invalid request payload content type", 400);
+			}
 
-            if (!is_array($object)) {
+			$teloDotazu = file_get_contents("php://input");
 
-                throw new Exception('Bad payload structure, must be formatted in JSON', 400);
-            }
+			$teloDotazu = json_decode($teloDotazu, true);
 
-            if (!array_key_exists("number", $object) || !is_string($object["text"]) || !array_key_exists("text", $object) ||
-            !preg_match('/^(\+420|00420)[1-9][0-9]{2}[0-9]{3}[0-9]{3}$/', $object["number"])) {
+			if (!is_array($teloDotazu)) {
 
-                throw new Exception("Invalid number and text properties in payload", 400);
-            }
+				throw new Exception('Bad payload structure, must be formatted in JSON', 400);
+			}
 
-            $trans = array(
-                'ä'=>'a','Ä'=>'A','á'=>'a','Á'=>'A','à'=>'a','À'=>'A','ã'=>'a','Ã'=>'A','â'=>'a','Â'=>'A','Å'=>'A','å'=>'a',
-                'č'=>'c','Č'=>'C','ć'=>'c','Ć'=>'C','ď'=>'d','Ď'=>'D','ě'=>'e','Ě'=>'E','é'=>'e','É'=>'E','ë'=>'e','Ë'=>'E',
-                'è'=>'e','È'=>'E','ê'=>'e','Ê'=>'E','í'=>'i','Í'=>'I','ï'=>'i','Ï'=>'I','ì'=>'i','Ì'=>'I','î'=>'i','Î'=>'I',
-                'ľ'=>'l','Ľ'=>'L','ĺ'=>'l','Ĺ'=>'L','ń'=>'n','Ń'=>'N','ň'=>'n','Ň'=>'N','ñ'=>'n','Ñ'=>'N','ó'=>'o','Ó'=>'O',
-                'ö'=>'o','Ö'=>'O','ô'=>'o','Ô'=>'O','ò'=>'o','Ò'=>'O','õ'=>'o','Õ'=>'O','ő'=>'o','Ő'=>'O','ř'=>'r','Ř'=>'R',
-                'ŕ'=>'r','Ŕ'=>'R','š'=>'s','Š'=>'S','ś'=>'s','Ś'=>'S','ť'=>'t','Ť'=>'T','ú'=>'u','Ú'=>'U','ů'=>'u','Ů'=>'U',
-                'ü'=>'u','Ü'=>'U','ù'=>'u','Ù'=>'U','ũ'=>'u','Ũ'=>'U','û'=>'u','Û'=>'U','ý'=>'y','Ý'=>'Y','ž'=>'z','Ž'=>'Z',
-                'ź'=>'z','Ź'=>'Z'           
-            );
+			if (!array_key_exists("number", $teloDotazu) || !is_string($teloDotazu["text"]) || !array_key_exists("text", $teloDotazu) ||
+			!preg_match('/^(\+420|00420)[1-9][0-9]{2}[0-9]{3}[0-9]{3}$/', $teloDotazu["number"])) {
 
-            $text = strtr($object["text"], $trans);
+				throw new Exception("Invalid number and text properties in payload", 400);
+			}
 
-            $converted = iconv('UTF-8', 'ASCII//TRANSLIT', $text);
+			$slovnikDiakritickychPismen = array(
+				'ä'=>'a','Ä'=>'A','á'=>'a','Á'=>'A','à'=>'a','À'=>'A','ã'=>'a','Ã'=>'A','â'=>'a','Â'=>'A','Å'=>'A','å'=>'a',
+				'č'=>'c','Č'=>'C','ć'=>'c','Ć'=>'C','ď'=>'d','Ď'=>'D','ě'=>'e','Ě'=>'E','é'=>'e','É'=>'E','ë'=>'e','Ë'=>'E',
+				'è'=>'e','È'=>'E','ê'=>'e','Ê'=>'E','í'=>'i','Í'=>'I','ï'=>'i','Ï'=>'I','ì'=>'i','Ì'=>'I','î'=>'i','Î'=>'I',
+				'ľ'=>'l','Ľ'=>'L','ĺ'=>'l','Ĺ'=>'L','ń'=>'n','Ń'=>'N','ň'=>'n','Ň'=>'N','ñ'=>'n','Ñ'=>'N','ó'=>'o','Ó'=>'O',
+				'ö'=>'o','Ö'=>'O','ô'=>'o','Ô'=>'O','ò'=>'o','Ò'=>'O','õ'=>'o','Õ'=>'O','ő'=>'o','Ő'=>'O','ř'=>'r','Ř'=>'R',
+				'ŕ'=>'r','Ŕ'=>'R','š'=>'s','Š'=>'S','ś'=>'s','Ś'=>'S','ť'=>'t','Ť'=>'T','ú'=>'u','Ú'=>'U','ů'=>'u','Ů'=>'U',
+				'ü'=>'u','Ü'=>'U','ù'=>'u','Ù'=>'U','ũ'=>'u','Ũ'=>'U','û'=>'u','Û'=>'U','ý'=>'y','Ý'=>'Y','ž'=>'z','Ž'=>'Z',
+				'ź'=>'z','Ź'=>'Z'           
+			);
 
-            $filtered = preg_replace('/[^a-zA-Z0-9@£¥_!"#¤%&()*+,.:;<=>?¿§\-\/\n\r ]/', '?', $converted);
+			$vyfiltrovanyTextSms = strtr($teloDotazu["text"], $slovnikDiakritickychPismen);
 
-            if (strlen($filtered) > 160) {
+			$vyfiltrovanyTextSms = iconv('UTF-8', 'ASCII//TRANSLIT', $vyfiltrovanyTextSms);
 
-                throw new Exception("Text property length in payload is too long", 400);
-            }
+			$vyfiltrovanyTextSms = preg_replace('/[^a-zA-Z0-9@£¥_!"#¤%&()*+,.:;<=>?¿§\-\/\n\r ]/', '?', $vyfiltrovanyTextSms);
 
-            $core->sql->query("
-                INSERT INTO sms_queue 
-                SET
-                    `account` = '{$value}',
-                    `created` = NOW(),
-                    `to` = '{$core->sql->escape($object["number"])}',
-                    `body` = '{$core->sql->escape($filtered)}'
-            ");
+			if (strlen($vyfiltrovanyTextSms) == 0) {
 
-            $lastAutoIncrement = $core->sql->insert_id();
+				throw new Exception("Text property cannot be empty", 400);
+			}
+			else if (strlen($vyfiltrovanyTextSms) > 160) {
 
-            $result = array("id" => $lastAutoIncrement);
-            $code = 201;
-        }
+				throw new Exception("Text property length in payload is too long", 400);
+			}
 
-        else if($uri[2] == "api" && isset($uri[3]) && $uri[4] == "status" && $uri[3] != "" && count($uri) == 5 && $_SERVER['REQUEST_METHOD'] == "GET") {
+			$core->sql->query("
+				INSERT INTO sms_queue 
+				SET
+					`account` = '".$core->sql->escape($identifikatorUzivatele)."',
+					`created` = NOW(),
+					`to` = '".$core->sql->escape($teloDotazu["number"])."',
+					`body` = '".$core->sql->escape($vyfiltrovanyTextSms)."'
+			");
 
-            if (ctype_digit($uri[3]) == false || $uri[3] == "0") {
+			$identifikatorNoveVytvoreneSms = $core->sql->insert_id();
 
-                throw new Exception("Badly entered smsId parameter in url path", 400);
-            }
+			$odpoved = array("id" => $identifikatorNoveVytvoreneSms);
+			$statusKod = 201;
+		}
 
-            $result = $core->sql->fetchArray("
-                SELECT 
-                    `id`, 
-                    `status`, 
-                    `sent`, 
-                    `created`
-                FROM `sms_queue` 
-                WHERE `account` = '{$value}' AND `id` = ".(int) $uri[3]."
-            ");
+		else if($url[2] == "api" && isset($url[3]) && $url[4] == "status" && $url[3] != "" && count($url) == 5 && $_SERVER['REQUEST_METHOD'] == "GET") {
 
-            if (empty($result)) {
+			if (ctype_digit($url[3]) == false || $url[3] == "0") {
 
-                throw new Exception("Sms was not found", 404);
-            }
+				throw new Exception("Badly entered smsId parameter in url path", 400);
+			}
 
-            $code = 200;
-        }
+			$odpoved = $core->sql->fetchArray("
+				SELECT 
+					`id`, 
+					`status`, 
+					`sent`, 
+					`created`
+				FROM `sms_queue` 
+				WHERE `account` = '".$core->sql->escape($identifikatorUzivatele)."' AND `id` = ".(int) $url[3]."
+			");
 
-        else if($uri[2] == "api" && $uri[3] == "queue" && count($uri) == 4 && $_SERVER['REQUEST_METHOD'] == "GET") {
+			if (empty($odpoved)) {
 
-            $result = $core->sql->toArray("
-                SELECT 
-                    `id`, 
-                    `body`, 
-                    `status`, 
-                    `to` AS num, 
-                    `created`, 
-                    `sent`
-                FROM `sms_queue`
-                WHERE `account` = '{$value}' AND `status` = 'PENDING'
-                ORDER BY `created` DESC 
-            ");
+				throw new Exception("SMS was not found", 404);
+			}
 
-            $code = 200;
-        }
+			$statusKod = 200;
+		}
 
-        else if ($uri[2] == "api" && $uri[3] == "stats" && count($uri) == 4 && $_SERVER['REQUEST_METHOD'] == "GET") {
+		else if($url[2] == "api" && $url[3] == "queue" && count($url) == 4 && $_SERVER['REQUEST_METHOD'] == "GET") {
 
-            $result = $core->sql->toArray("
-                SELECT 
-                    DATE(`sent`) AS dateOfSending,
-                    COUNT(`id`) AS numberOfSentSms
-                FROM `sms_queue` 
-                WHERE `status` = 'SENT' AND `account` = '{$value}' AND DATE(`sent`) >= DATE_SUB(CURDATE(), INTERVAL 1 YEAR)
-                GROUP BY DATE(`sent`) HAVING COUNT(id) > 0 
-                ORDER BY DATE(`sent`) DESC 
-                LIMIT 100
-            ");
+			$odpoved = $core->sql->toArray("
+				SELECT 
+					`id`, 
+					`body` AS `text`, 
+					`status`, 
+					`to` AS `number`, 
+					`created`, 
+					`sent`
+				FROM `sms_queue`
+				WHERE `account` = '".$core->sql->escape($identifikatorUzivatele)."' AND `status` = 'PENDING'
+				ORDER BY `created` DESC 
+			");
 
-            $code = 200;
-        }
+			$statusKod = 200;
+		}
 
-        else {
-        
-            throw new Exception("Entered endpoint is not known", 400);
-        }
+		else if ($url[2] == "api" && $url[3] == "stats" && count($url) == 4 && $_SERVER['REQUEST_METHOD'] == "GET") {
 
-        http_response_code($code);
-        echo json_encode($result);
-    }
+			$odpoved = $core->sql->toArray("
+				SELECT 
+					DATE(`sent`) AS dateOfSending,
+					COUNT(`id`) AS numberOfSentSms
+				FROM `sms_queue` 
+				WHERE `status` = 'SENT' AND `account` = '".$core->sql->escape($identifikatorUzivatele)."' AND DATE(`sent`) >= DATE_SUB(CURDATE(), INTERVAL 1 YEAR)
+				GROUP BY DATE(`sent`)
+				ORDER BY DATE(`sent`) DESC 
+			");
+
+			$statusKod = 200;
+		}
+
+		else {
+		
+			throw new Exception("Entered endpoint is not known", 400);
+		}
+
+		http_response_code($statusKod);
+		echo json_encode($odpoved);
+	}
 }
 
 catch(Exception $e) {
 
-    $errorCode = $e->getCode();
-    
-    if($errorCode == 200) {
+	$statusKod = $e->getCode();
+	
+	if($statusKod == 200) {
 
-        $errorCode = 500;
-    }
+		$statusKod = 500;
+	}
 
-    http_response_code($errorCode);
-    echo json_encode(array(
-        "error" => $e->getMessage()
-    ));
+	http_response_code($statusKod);
+	echo json_encode(array(
+		"error" => $e->getMessage()
+	));
 }
 
 exit;

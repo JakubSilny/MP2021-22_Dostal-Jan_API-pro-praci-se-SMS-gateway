@@ -1,17 +1,17 @@
 <?php
-// jiz existoval pred revizi, pouze revizovan a trochu vylepsen
 
-$paginate = 30;
-$limit = $paginate;
+$startovniSqlOffset = 30;
+$sqlLimit = (int) $startovniSqlOffset;
 
 if(!empty($_GET["p"])) {
-	$limit .=" OFFSET ".($paginate * (int) $_GET["p"]);
+	$sqlLimit .=" OFFSET ".((int) $startovniSqlOffset * (int) $_GET["p"]);
 }
 
-$where = "status = 'ERROR'";
+$sqlPodminka = "status = 'ERROR'";
 
 if(!empty($_GET["q"])) {
-	$where .= " AND (
+
+	$sqlPodminka .= " AND (
 		`to` LIKE '%".$core->sql->escape(str_replace("%", "", $_GET["q"]))."%'
 		OR `body` LIKE '%".$core->sql->escape(str_replace("%", "", $_GET["q"]))."%'
 		OR sms_account.label LIKE '%".$core->sql->escape(str_replace("%", "", $_GET["q"]))."%'
@@ -20,16 +20,18 @@ if(!empty($_GET["q"])) {
 
 
 if($_GET["case"] == "errs") {
-	$errs = $core->sql->toArray("
+
+	$chyby = $core->sql->toArray("
 		SELECT *
 		FROM sms_log
 		WHERE id_sms = ".(int)$_GET["id"]."
-		ORDER BY id DESC
+		ORDER BY date DESC
 	");
-	alert($errs);
+	alert($chyby);
 	$core->quit();
 
 } elseif($_GET["case"] == "repeat") {
+
 	try {
 
 		$core->sql->query("
@@ -37,56 +39,59 @@ if($_GET["case"] == "errs") {
 				status = 'PENDING'
 			WHERE id = ".(int)$_GET["id"]."
 		");
+
 		echo json_encode(array("result"=>"ok"));
 	} catch(Exception $e) {
+
 		echo json_encode(array("error"=>$e->getMessage()));
 	}
+
 	$core->quit();
 }
 
 
 
-$list = $core->sql->toArray("
+$vzdaneZpravy = $core->sql->toArray("
 	SELECT sms_queue.*
 		,(SELECT COUNT(*) FROM sms_log WHERE sms_log.id_sms = sms_queue.id) AS errCount
 	FROM sms_queue
 		LEFT JOIN sms_account ON sms_account.uuid = sms_queue.account
-	WHERE ".$where."
-	ORDER BY sent DESC
-	LIMIT ".$limit."
+	WHERE ".$sqlPodminka."
+	ORDER BY created DESC
+	LIMIT ".$sqlLimit."
 ");
 
 
-$accounts = $core->sql->toArray("
+$ucty = $core->sql->toArray("
 	SELECT uuid, label
 	FROM sms_account
 ", "dual");
 
 
-$out = new smartyWrapper($core);
-$out->setTemplateDir(__DIR__);
-$out->assign("accounts", $accounts);
+$vystup = new smartyWrapper($core);
+$vystup->setTemplateDir(__DIR__);
+$vystup->assign("ucty", $ucty);
 
 if($_GET["case"]=="getPage") {
 
-	$out->display("list_head.tpl");
-	foreach($list as $item) {
-		$out->assign("item", $item);
-		$out->display("list_item.tpl");
+	$vystup->display("list_head.tpl");
+	foreach($vzdaneZpravy as $polozka) {
+		$vystup->assign("polozka", $polozka);
+		$vystup->display("list_item.tpl");
 	}
 
 	$core->quit();
 }
 else {
 
-	$out->assign("sizeOfGaveUp", $core->sql->fetchValue("
+	$vystup->assign("pocetVzdanychZprav", $core->sql->fetchValue("
 		SELECT COUNT(`id`)
 		FROM sms_queue
 		WHERE `status` = 'ERROR'
 	"));
 
-	$out->assign("list", $list);
-	$out->display("gaveup.tpl");
+	$vystup->assign("vzdaneZpravy", $vzdaneZpravy);
+	$vystup->display("gaveup.tpl");
 }
 
 ?>

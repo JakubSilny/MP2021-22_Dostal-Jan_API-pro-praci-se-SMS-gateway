@@ -1,18 +1,16 @@
 <?php
 
-// jiz existoval pred revizi, pouze revizovan a trochu vylepsen
-
-$paginate = 30;
-$limit = $paginate;
+$startovniSqlOffset = 30;
+$sqlLimit = (int) $startovniSqlOffset;
 
 if(!empty($_GET["p"])) {
-	$limit .=" OFFSET ".($paginate* (int) $_GET["p"]);
+	$sqlLimit .=" OFFSET ".((int) $startovniSqlOffset* (int) $_GET["p"]);
 }
 
-$where = "status = 'PENDING'";
+$sqlPodminka = "status = 'PENDING'";
 
 if(!empty($_GET["q"])) {
-	$where .= " AND (
+	$sqlPodminka .= " AND (
 		`to` LIKE '%".$core->sql->escape(str_replace("%", "", $_GET["q"]))."%'
 		OR `body` LIKE '%".$core->sql->escape(str_replace("%", "", $_GET["q"]))."%'
 		OR sms_account.label LIKE '%".$core->sql->escape(str_replace("%", "", $_GET["q"]))."%'
@@ -37,6 +35,7 @@ if($_GET["case"] == "sendtest") {
 			<button type="button" onclick="window.location.reload();">Obnovit stránku</button>
 		</div>
 	</form>';
+
 	} catch (Exception $e) {
 
 		echo '<form>
@@ -53,6 +52,7 @@ if($_GET["case"] == "sendtest") {
 
 	echo '
 	<form>
+		<div class="msgInfo">CRON se spustil</div>
 		<div class="buttons">
 			<button type="button" onclick="window.location.reload();">Obnovit stránku</button>
 		</div>
@@ -64,6 +64,7 @@ if($_GET["case"] == "sendtest") {
 	$core->quit();
 
 } elseif($_GET["case"] == "cancel") {
+
 	try {
 
 		$core->sql->query("
@@ -71,20 +72,27 @@ if($_GET["case"] == "sendtest") {
 				status = 'CANCELED'
 			WHERE id = ".(int)$_GET["id"]."
 		");
+
 		echo json_encode(array("result"=>"ok"));
+
 	} catch(Exception $e) {
+
 		echo json_encode(array("error"=>$e->getMessage()));
 	}
+
 	$core->quit();
 }
 elseif($_GET["case"] == "errs") {
-	$errs = $core->sql->toArray("
+
+	$chyby = $core->sql->toArray("
 		SELECT *
 		FROM sms_log
 		WHERE id_sms = ".(int)$_GET["id"]."
-		ORDER BY id DESC
+		ORDER BY date DESC
 	");
-	alert($errs);
+
+	alert($chyby);
+
 	$core->quit();
 }
 
@@ -93,53 +101,53 @@ elseif($_GET["case"] == "errs") {
 // exec('gammu getallsms', $out);
 // alert($out);
 
-$list = $core->sql->toArray("
+$cekajiciZpravy = $core->sql->toArray("
 	SELECT sms_queue.*
 		,(SELECT COUNT(*) FROM sms_log WHERE sms_log.id_sms = sms_queue.id) AS errCount
 	FROM sms_queue
 		LEFT JOIN sms_account ON sms_account.uuid = sms_queue.account
-	WHERE ".$where."
+	WHERE ".$sqlPodminka."
 	ORDER BY created DESC
-	LIMIT ".$limit."
+	LIMIT ".$sqlLimit."
 ");
 
 
-$accounts = $core->sql->toArray("
+$ucty = $core->sql->toArray("
 	SELECT uuid, label
 	FROM sms_account
 ", "dual");
 
-$out = new smartyWrapper($core);
-$out->setTemplateDir(__DIR__);
-$out->assign("accounts", $accounts);
+$vystup = new smartyWrapper($core);
+$vystup->setTemplateDir(__DIR__);
+$vystup->assign("ucty", $ucty);
 
 if($_GET["case"]=="getPage") {
 
-	$out->display("list_head.tpl");
-	foreach($list as $item) {
-		$out->assign("item", $item);
-		$out->display("list_item.tpl");
+	$vystup->display("list_head.tpl");
+	foreach($cekajiciZpravy as $polozka) {
+		$vystup->assign("polozka", $polozka);
+		$vystup->display("list_item.tpl");
 	}
 
 	$core->quit();
 }
 else {
 
-	$out->assign("sizeOfQueue", $core->sql->fetchValue("
+	$vystup->assign("velikostFronty", $core->sql->fetchValue("
 		SELECT COUNT(`id`)
 		FROM sms_queue
 		WHERE `status` = 'PENDING'
 	"));
 
-	$out->assign("lastCronDate", $core->sql->fetchValue("
+	$vystup->assign("posledniSpusteniCronu", $core->sql->fetchValue("
 		SELECT `date`
 		FROM sms_cron_log
 		ORDER BY `date` DESC
 		LIMIT 1
 	"));
 
-	$out->assign("list", $list);
-	$out->display("queue.tpl");
+	$vystup->assign("cekajiciZpravy", $cekajiciZpravy);
+	$vystup->display("queue.tpl");
 }
 
 ?>
