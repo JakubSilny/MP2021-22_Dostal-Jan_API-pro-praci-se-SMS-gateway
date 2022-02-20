@@ -1,3 +1,7 @@
+/*
+Představuje konfigurační soubor zapsaný v JSON formátu, na jehož základě se Swagger vygeneruje dokumentaci
+*/
+
 var spec =
 
 {
