@@ -1,3 +1,6 @@
+{* 
+Šablona používaná jako definování konkrétní struktury jednoho řádku tabulky při výpisu uživatelských účtů, používá Smarty
+*}
 <tr>
 	<td><code>{$polozka.uuid}</code></td>
 	<td>{$polozka.label}</td>
