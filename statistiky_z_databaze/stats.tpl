@@ -1,5 +1,12 @@
+{* 
+Šablona používaná jako frontend pro stránku, která zobrazuje souhrnné statistiky z databáze
+*}
+
 {if !empty($uzivatel)}
 	<p>Klient: {$uzivatel.label}</p>
+	{* 
+	Nastaví url zpátky na výchozí, backend patřičně reaguje
+	*}
 	<button onclick="location.href='/smsgateway/stats'" type="button">Zpět</button>
 {/if}
 
@@ -15,6 +22,9 @@
 		<tbody>
 			{foreach $odeslaneSmsDleUzivatelu as $polozka}
 				<tr>
+					{* 
+					Rozšíří URL o nový query parametr, backend patřičně reaguje
+					*}
 					<td><a href="?uuid={$polozka.uuid}">{$polozka.label}</a></td>
 					<td class="num">{$polozka.numberOfSentSms}</td>
 				</tr>
