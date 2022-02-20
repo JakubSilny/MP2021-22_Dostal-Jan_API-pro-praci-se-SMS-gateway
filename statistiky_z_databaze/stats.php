@@ -81,7 +81,7 @@ try {
 	$vystup->assign("odeslaneSmsDleDnu", $odeslaneSmsDleDnu);
 	$vystup->assign("uzivatel", $uzivatel);
 
-	// Výpis obsahu šablony
+	// Výpis obsahu šablony (frontend)
 	$vystup->display("stats.tpl");
 
 
