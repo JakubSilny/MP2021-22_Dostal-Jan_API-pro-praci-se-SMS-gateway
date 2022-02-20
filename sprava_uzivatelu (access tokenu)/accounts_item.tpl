@@ -1,5 +1,5 @@
 {* 
-Šablona používaná jako definování konkrétní struktury jednoho řádku tabulky při výpisu uživatelských účtů, používá Smarty 
+Šablona používaná jako definování konkrétní struktury jednoho řádku tabulky (tbody) při výpisu uživatelských účtů, používá Smarty 
 *}
 <tr>
 	<td><code>{$polozka.uuid}</code></td>
