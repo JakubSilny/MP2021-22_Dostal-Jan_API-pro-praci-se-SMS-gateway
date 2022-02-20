@@ -14,7 +14,7 @@ if(!empty($_GET["p"])) {
 $sqlPodminka = "status = 'CANCELED'";
 
 /*
-Reakce na formulář ze šablony, dle obsahu formuláře vyfiltruje tabulku
+Reakce na formulář z frontendu, dle obsahu formuláře vyfiltruje tabulku
 */
 if(!empty($_GET["q"])) {
 	$sqlPodminka .= " AND (
