@@ -55,7 +55,7 @@ else {
 		FROM sms_account
 	"));
 	
-	// Přenesení PHP proměnné do šablony
+	// Přenesení PHP proměnné do šablony (frontendu)
 	$vystup->assign("ucty", $ucty);
 	// Výpis obsahu šablony (frontend)
 	$vystup->display("accounts.tpl");
