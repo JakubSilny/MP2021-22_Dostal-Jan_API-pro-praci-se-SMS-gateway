@@ -82,7 +82,7 @@ $vystup = new smartyWrapper($core);
 // Vybrání uložiště pro šablony
 $vystup->setTemplateDir(__DIR__);
 
-// Přenesení PHP proměnné do šablony
+// Přenesení PHP proměnné do šablony (frontendu)
 $vystup->assign("ucty", $ucty);
 
 if($_GET["case"]=="getPage") {
@@ -106,7 +106,7 @@ else {
 
 	$vystup->assign("zruseneZpravy", $zruseneZpravy);
 
-	// Výpis obsahu šablony
+	// Výpis obsahu šablony (frontendu)
 	$vystup->display("trash.tpl");
 }
 
