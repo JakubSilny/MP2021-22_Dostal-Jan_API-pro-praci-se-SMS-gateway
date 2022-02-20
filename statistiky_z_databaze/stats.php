@@ -1,8 +1,16 @@
 <?php
 
-try {
+/*
+Backend část stránky, která zobrazuje souhrnné statistiky z databáze 
+*/
 
-	if(!empty($_GET["uuid"])) {
+
+try {
+	
+	/*
+	Buďto vypisuje obecné statistiky, anebo statistiky konkrétního uživatele
+	*/
+	if(!empty($_GET["uuid"])) { // Reakce na přidaný query parametr
 
 		$uzivatel = $core->sql->fetchArray("
 			SELECT *
@@ -30,7 +38,9 @@ try {
 		");
 	}
 
-
+	/*
+	Podle query parametru buďto vypisuje v závislosti na všech uživatelích anebo konkrétním
+	*/
 	$odeslaneSmsDleDnu = $core->sql->toArray("
 		SELECT
 			DATE(`sent`) AS dateOfSending,
@@ -41,7 +51,10 @@ try {
 			".(!empty($uzivatel) ? "AND account = '".$core->sql->escape($uzivatel["uuid"])."'" : "")."
 		GROUP BY DATE(`sent`)
 	", "first");
-
+	
+	/*
+	Vypíšu všechny datumy odteď až po 1 rok dozadu, pokud konkrétní datum není v odeslaneSmsDleDnu, tak ho tam přidám, poté postupuji po dnech až po současnost
+	*/
 	$casPredJednymRokem = strtotime("-1 year");
 	while($casPredJednymRokem <= time()) {
 		$datum = date("Y-m-d", $casPredJednymRokem);
@@ -53,16 +66,22 @@ try {
 		}
 		$casPredJednymRokem = strtotime("+1 day", $casPredJednymRokem);
 	}
-
+	
+	// Seřadím od nejnovějšího datumu po nejstarší
 	krsort($odeslaneSmsDleDnu);
 
+	// Nastavení Smarty systému
 	$vystup = new smartyWrapper($core);
-	$vystup->setTemplateDir(__DIR__);
 
+	// Vybrání uložiště pro šablony
+	$vystup->setTemplateDir(__DIR__);
+	
+	// Přenesení PHP proměnné do šablony
 	$vystup->assign("odeslaneSmsDleUzivatelu", $odeslaneSmsDleUzivatelu);
 	$vystup->assign("odeslaneSmsDleDnu", $odeslaneSmsDleDnu);
 	$vystup->assign("uzivatel", $uzivatel);
 
+	// Výpis obsahu šablony
 	$vystup->display("stats.tpl");
 
 
