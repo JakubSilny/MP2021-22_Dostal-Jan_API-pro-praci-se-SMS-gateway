@@ -1,14 +1,21 @@
 <?php
 
+/*
+Backend část stránky, která vypisuje zrušené SMS a umožnuje s nimi pracovat
+*/
+
 $startovniSqlOffset = 30;
-$sqlLimit = (int) $startovniSqlOffset;
+$sqlLimit = (int) $startovniSqlOffset; // Nastavení počtu řádků tabulky v jeden okamžik, tedy za jeden SQL dotaz
 
 if(!empty($_GET["p"])) {
-	$sqlLimit .=" OFFSET ".((int) $startovniSqlOffset* (int) $_GET["p"]);
+	$sqlLimit .=" OFFSET ".((int) $startovniSqlOffset* (int) $_GET["p"]); // Zjištění, od kolikaté pozice donačíst další řádky
 }
 
 $sqlPodminka = "status = 'CANCELED'";
 
+/*
+Reakce na formulář ze šablony, dle obsahu formuláře vyfiltruje tabulku
+*/
 if(!empty($_GET["q"])) {
 	$sqlPodminka .= " AND (
 		`to` LIKE '%".$core->sql->escape(str_replace("%", "", $_GET["q"]))."%'
@@ -17,6 +24,9 @@ if(!empty($_GET["q"])) {
 	)";
 }
 
+/*
+Reakce na událost vyvolanou ve frontendu, pro konkrétní SMS zobrazí logy (chyby) při pokusech o odeslání
+*/
 if($_GET["case"] == "errs") {
 
 	$chyby = $core->sql->toArray("
@@ -30,7 +40,7 @@ if($_GET["case"] == "errs") {
 
 	$core->quit();
 
-} elseif($_GET["case"] == "repeat") {
+} elseif($_GET["case"] == "repeat") { // Reakce na událost vyvolanou ve frontendu, pokusí se znovu odeslat zrušenou SMS umístěním do fronty
 
 	try {
 
@@ -49,6 +59,7 @@ if($_GET["case"] == "errs") {
 	$core->quit();
 }
 
+// Získání zrušených zpráv
 $zruseneZpravy = $core->sql->toArray("
 	SELECT sms_queue.*
 		,(SELECT COUNT(*) FROM sms_log WHERE sms_log.id_sms = sms_queue.id) AS errCount
@@ -65,13 +76,18 @@ $ucty = $core->sql->toArray("
 	FROM sms_account
 ", "dual");
 
-
+// Nastavení Smarty systému
 $vystup = new smartyWrapper($core);
+
+// Vybrání uložiště pro šablony
 $vystup->setTemplateDir(__DIR__);
+
+// Přenesení PHP proměnné do šablony
 $vystup->assign("ucty", $ucty);
 
 if($_GET["case"]=="getPage") {
 
+	// Provede při žádosti o donačtění dalších řádků
 	$vystup->display("list_head.tpl");
 	foreach($zruseneZpravy as $polozka) {
 		$vystup->assign("polozka", $polozka);
@@ -81,7 +97,7 @@ if($_GET["case"]=="getPage") {
 	$core->quit();
 }
 else {
-
+	// Provede se při prvním načtění stránky pouze
 	$vystup->assign("pocetZrusenychZprav", $core->sql->fetchValue("
 		SELECT COUNT(`id`)
 		FROM sms_queue
@@ -89,6 +105,8 @@ else {
 	"));
 
 	$vystup->assign("zruseneZpravy", $zruseneZpravy);
+
+	// Výpis obsahu šablony
 	$vystup->display("trash.tpl");
 }
 
