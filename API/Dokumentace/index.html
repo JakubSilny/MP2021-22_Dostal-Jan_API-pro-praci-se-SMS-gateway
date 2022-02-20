@@ -1,4 +1,5 @@
 <!-- HTML for static distribution bundle build -->
+<!-- Představuje HTML stránku, na které se vytvoří vygeneruje dokumentace na základě konfiguračního souboru -->
 <!DOCTYPE html>
 <html lang="en">
   <head>
@@ -31,17 +32,18 @@
   </head>
 
   <body>
+    <!-- Tag s id parametrem, dokumentace se vypíše právě dovnitř tohoto tagu -->
     <div id="swagger-ui"></div>
 
-    <script src="./swagger-ui-bundle.js" charset="UTF-8"> </script>
-    <script src="./swagger-ui-standalone-preset.js" charset="UTF-8"> </script>
-    <script src="./swagger-configuration.js" charset="UTF-8"></script>
+    <script src="./swagger-ui-bundle.js" charset="UTF-8"> </script> <!-- Swagger přídavný balíček, používá ho dokumentace -->
+    <script src="./swagger-ui-standalone-preset.js" charset="UTF-8"> </script> <!-- Swagger přídavný balíček, používá ho dokumentace -->
+    <script src="./swagger-configuration.js" charset="UTF-8"></script> <!-- Konfigurační soubor zapsaný v JSON, použije se k vygenerování dokumentace -->
     <script>
     window.onload = function() {
       // Begin Swagger UI call region
       const ui = SwaggerUIBundle({
-        spec: spec,
-        dom_id: '#swagger-ui',
+        spec: spec, <!-- Proměnná pocházející z konfiguračního souboru, je v ní uložen obsah souboru v JSON formátu -->
+        dom_id: '#swagger-ui', <!-- Odkaz prostřednictvím id parametru na tag, kam se má dokumentace vypsat -->
         deepLinking: true,
         showCommonExtensions: true,
         presets: [
