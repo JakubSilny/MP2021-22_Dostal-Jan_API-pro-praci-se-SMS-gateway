@@ -1,3 +1,6 @@
+{* 
+Šablona používaná jako definování obecné struktury řádků v tabulce (thead) při výpisu frontendů (šablon) určitých stránek (sent, queue, gaveup, trash), používá Smarty 
+*}
 
 <tr>
 	<th class="num">ID</th>
