@@ -1,5 +1,5 @@
 {* 
-Šablona používaná jako definování obecné struktury řádků v tabulce (thead) při výpisu frontendů (šablon) určitých stránek (sent, queue, gaveup, trash), používá Smarty 
+Šablona používaná jako definování konkrétní struktury jednoho řádku tabulky (tbody) při výpisu frontendů (šablon) určitých stránek (sent, queue, gaveup, trash), používá Smarty 
 *}
 
 <tr>
