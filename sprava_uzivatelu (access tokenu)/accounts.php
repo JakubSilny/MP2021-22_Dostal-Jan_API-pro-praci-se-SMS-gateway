@@ -57,7 +57,7 @@ else {
 	
 	// Přenesení PHP proměnné do šablony
 	$vystup->assign("ucty", $ucty);
-	// Výpis obsahu šablony
+	// Výpis obsahu šablony (frontend)
 	$vystup->display("accounts.tpl");
 }
 
