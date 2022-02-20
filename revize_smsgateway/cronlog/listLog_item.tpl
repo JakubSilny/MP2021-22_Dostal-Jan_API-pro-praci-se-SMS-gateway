@@ -1,3 +1,7 @@
+{* 
+Šablona používaná jako definování konkrétní struktury jednoho řádku tabulky (tbody) při výpisu frontendu cronlogu, používá Smarty 
+*}
+
 <tr>
 	<td class="center">{$polozka.date}</td>
 	<td class="num">{$polozka.log.queue}</td>
