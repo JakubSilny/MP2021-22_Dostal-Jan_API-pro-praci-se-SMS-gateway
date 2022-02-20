@@ -15,7 +15,7 @@ if(!empty($_GET["p"])) {
 $sqlPodminka = "status = 'SENT'";
 
 /*
-Reakce na formulář ze šablony, dle obsahu formuláře vyfiltruje tabulku
+Reakce na formulář z frontendu, dle obsahu formuláře vyfiltruje tabulku
 */
 if(!empty($_GET["q"])) {
 	$sqlPodminka .= " AND (
@@ -47,7 +47,7 @@ $vystup = new smartyWrapper($core);
 // Vybrání uložiště pro šablony
 $vystup->setTemplateDir(__DIR__);
 
-// Přenesení PHP proměnné do šablony
+// Přenesení PHP proměnné do šablony (frontend)
 $vystup->assign("ucty", $ucty);
 
 if($_GET["case"]=="getPage") {
@@ -66,7 +66,7 @@ else {
 	// Provede se při prvním načtění stránky pouze
 	$vystup->assign("odeslaneZpravy", $odeslaneZpravy);
 	
-	// Výpis obsahu šablony
+	// Výpis obsahu šablony (frontend)
 	$vystup->display("sent.tpl");
 }
 
