@@ -76,7 +76,7 @@ try {
 	// Vybrání uložiště pro šablony
 	$vystup->setTemplateDir(__DIR__);
 	
-	// Přenesení PHP proměnné do šablony
+	// Přenesení PHP proměnné do šablony (frontendu)
 	$vystup->assign("odeslaneSmsDleUzivatelu", $odeslaneSmsDleUzivatelu);
 	$vystup->assign("odeslaneSmsDleDnu", $odeslaneSmsDleDnu);
 	$vystup->assign("uzivatel", $uzivatel);
