@@ -1,3 +1,8 @@
+{* 
+Šablona používaná jako definování obecné struktury řádků v tabulce (thead) při výpisu frontendu cronlogu, používá Smarty 
+*}
+
+
 <tr>
 	<th class="center">Datum</th>
 	<th class="num">Ve frontě</th>
