@@ -1,14 +1,21 @@
 <?php
 
+/*
+Backend část stránky, která vypisuje SMS čekající na odeslání a umožnuje s nimi pracovat
+*/
+
 $startovniSqlOffset = 30;
-$sqlLimit = (int) $startovniSqlOffset;
+$sqlLimit = (int) $startovniSqlOffset; // Nastavení počtu řádků tabulky v jeden okamžik, tedy za jeden SQL dotaz
 
 if(!empty($_GET["p"])) {
-	$sqlLimit .=" OFFSET ".((int) $startovniSqlOffset* (int) $_GET["p"]);
+	$sqlLimit .=" OFFSET ".((int) $startovniSqlOffset* (int) $_GET["p"]); // Zjištění, od kolikaté pozice donačíst další řádky
 }
 
 $sqlPodminka = "status = 'PENDING'";
 
+/*
+Reakce na formulář z frontendu, dle obsahu formuláře vyfiltruje tabulku
+*/
 if(!empty($_GET["q"])) {
 	$sqlPodminka .= " AND (
 		`to` LIKE '%".$core->sql->escape(str_replace("%", "", $_GET["q"]))."%'
@@ -17,6 +24,9 @@ if(!empty($_GET["q"])) {
 	)";
 }
 
+/*
+Reakce na událost vyvolanou ve frontendu, zařadí do fronty testovací SMS
+*/
 if($_GET["case"] == "sendtest") {
 
 	try {
@@ -48,7 +58,7 @@ if($_GET["case"] == "sendtest") {
 
 	$core->quit();
 
-} else if ($_GET["case"] == "cron") {
+} else if ($_GET["case"] == "cron") { // Reakce na událost vyvolanou ve frontendu, spustí CRON (stará se o odesílání SMS)
 
 	echo '
 	<form>
@@ -63,7 +73,7 @@ if($_GET["case"] == "sendtest") {
 
 	$core->quit();
 
-} elseif($_GET["case"] == "cancel") {
+} elseif($_GET["case"] == "cancel") { // Reakce na událost vyvolanou ve frontendu, Zruší vybranou SMS čekající na odeslání
 
 	try {
 
@@ -82,7 +92,7 @@ if($_GET["case"] == "sendtest") {
 
 	$core->quit();
 }
-elseif($_GET["case"] == "errs") {
+elseif($_GET["case"] == "errs") { // Reakce na událost vyvolanou ve frontendu, pro konkrétní SMS zobrazí logy (chyby při pokusech o odeslání)
 
 	$chyby = $core->sql->toArray("
 		SELECT *
@@ -96,11 +106,7 @@ elseif($_GET["case"] == "errs") {
 	$core->quit();
 }
 
-
-// $out = array();
-// exec('gammu getallsms', $out);
-// alert($out);
-
+// Získání zpráv čekajících na odeslání
 $cekajiciZpravy = $core->sql->toArray("
 	SELECT sms_queue.*
 		,(SELECT COUNT(*) FROM sms_log WHERE sms_log.id_sms = sms_queue.id) AS errCount
@@ -117,12 +123,18 @@ $ucty = $core->sql->toArray("
 	FROM sms_account
 ", "dual");
 
+// Nastavení Smarty systému
 $vystup = new smartyWrapper($core);
+
+// Vybrání uložiště pro šablony
 $vystup->setTemplateDir(__DIR__);
+
+// Přenesení PHP proměnné do šablony (frontendu)
 $vystup->assign("ucty", $ucty);
 
 if($_GET["case"]=="getPage") {
 
+	// Provede při žádosti o donačtění dalších řádků
 	$vystup->display("list_head.tpl");
 	foreach($cekajiciZpravy as $polozka) {
 		$vystup->assign("polozka", $polozka);
@@ -132,7 +144,7 @@ if($_GET["case"]=="getPage") {
 	$core->quit();
 }
 else {
-
+	// Provede se při prvním načtění stránky pouze
 	$vystup->assign("velikostFronty", $core->sql->fetchValue("
 		SELECT COUNT(`id`)
 		FROM sms_queue
@@ -147,6 +159,8 @@ else {
 	"));
 
 	$vystup->assign("cekajiciZpravy", $cekajiciZpravy);
+
+	// Výpis obsahu šablony (frontendu)
 	$vystup->display("queue.tpl");
 }
 
