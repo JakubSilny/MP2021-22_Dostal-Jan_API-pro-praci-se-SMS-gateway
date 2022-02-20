@@ -1,3 +1,6 @@
+{* 
+Šablona používaná jako definování obecné struktury řádků v tabulce (thead) při výpisu uživatelských účtů, používá Smarty 
+*}
 <tr>
 	<th>UUID</th>
 	<th>Klient</th>
