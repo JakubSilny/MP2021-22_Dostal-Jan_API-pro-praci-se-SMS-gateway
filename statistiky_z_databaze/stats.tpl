@@ -5,7 +5,7 @@
 {if !empty($uzivatel)}
 	<p>Klient: {$uzivatel.label}</p>
 	{* 
-	Nastaví url zpátky na výchozí, backend patřičně reaguje
+	Nastaví url zpátky na výchozí, backend (PHP skript) patřičně reaguje
 	*}
 	<button onclick="location.href='/smsgateway/stats'" type="button">Zpět</button>
 {/if}
