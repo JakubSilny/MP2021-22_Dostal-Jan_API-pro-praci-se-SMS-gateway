@@ -22,7 +22,7 @@
 	<thead>
 		{include file="list_head.tpl"}
 	</thead>
-	<tbody id="nacistDalsi_cil"	>
+	<tbody id="nacistDalsi_cil">
 		{foreach $cekajiciZpravy as $polozka}
 			{include file="list_item.tpl" type='pending'}
 		{/foreach}
