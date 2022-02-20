@@ -1,4 +1,3 @@
-která vypisuje všechny provedené spuštění CRONU
 {* 
 Šablona používaná jako frontend pro stránku, která vypisuje všechny provedené spuštění CRONU
 *}
