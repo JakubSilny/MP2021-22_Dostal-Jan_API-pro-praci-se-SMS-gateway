@@ -25,7 +25,7 @@ if(!empty($_GET["q"])) {
 }
 
 /*
-Reakce na událost vyvolanou ve frontendu, pro konkrétní SMS zobrazí logy (chyby) při pokusech o odeslání
+Reakce na událost vyvolanou ve frontendu, pro konkrétní SMS zobrazí logy (chyby při pokusech o odeslání)
 */
 if($_GET["case"] == "errs") {
 
