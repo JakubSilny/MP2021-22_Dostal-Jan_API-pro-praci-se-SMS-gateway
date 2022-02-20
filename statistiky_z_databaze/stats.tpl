@@ -1,5 +1,5 @@
 {* 
-Šablona používaná jako frontend pro stránku, která zobrazuje souhrnné statistiky z databáze
+Šablona používaná jako frontend pro stránku, která zobrazuje souhrnné statistiky z databáze 
 *}
 
 {if !empty($uzivatel)}
