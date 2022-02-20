@@ -113,8 +113,8 @@ try {
 			
 			/*
 			Provede se vyfiltrování budoucího těla SMS zprávy, vyfiltrování je 3-vrstvé, důvod je tzv. zřetězené SMS, tedy pošle se 1 SMS,
-			ve skutečnosti to jsou například 4 SMS spojené dohromady, tedy cena SMS je např. 2 Kč, dojem může být že jsem poslal 1 SMS, takže zaplatím 2 Kč,
-			ale ve skutečnosti zaplatím 8 Kč kvůli zřetězené SMS
+			ve skutečnosti to jsou například 4 SMS spojené dohromady, tedy cena SMS je např. 2 Kč, dojem může být že byla poslána 1 SMS, takže zaplatím 2 Kč,
+			ale ve skutečnosti zaplatím 8 Kč kvůli zřetězené SMS. Použítí určitých znaků automaticky udělá z normální SMS zřetězenou, proto se filtruje
 			*/
 
 			$slovnikDiakritickychPismen = array(
